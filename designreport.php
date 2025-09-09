@@ -194,7 +194,8 @@ $list_view=<<<EOT
 		</div>
 	</div>
 	<div class="w-100 p-3 text-center">
-		<a role="button" class="btn btn-warning btn-lg p-4 m-2 size20 weight" style="width:350px;" href="/?ch=designreport_05&fm=designreport" target="_blank"><i class="bi bi-journal-text"></i>&nbsp;&nbsp;合約工項月報表</a>
+		
+		<a role="button" class="btn btn-warning btn-lg p-4 m-2 size20 weight" style="width:350px;" href="/?ch=designreport_05&fm=designreport" target="_blank"><i class="bi bi-journal-text"></i>&nbsp;&nbsp;協力廠商作業進度表</a>
 	</div>
 </div>
 EOT;
