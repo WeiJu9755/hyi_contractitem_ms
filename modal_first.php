@@ -23,14 +23,14 @@ if (isset($_GET['sid']))
 //程式分類
 $ch = empty($_GET['ch']) ? 'default' : $_GET['ch'];
 switch($ch) {
-	case 'designreport_05':
+	case 'contractitem_01':
 		$sid = "view01";
-		$modal = $m_location."/sub_modal/project/func08/contractitem_ms/designreport_05.php";
+		$modal = $m_location."/sub_modal/project/func08/contractitem_ms/contractitem_01.php";
 		include $modal;
 		$smarty->assign('show_center',$show_center);
 		break;
-	case 'designreport_05_exportexcel':
-		$modal = $m_location."/sub_modal/project/func08/contractitem_ms/designreport_05_exportexcel.php";
+	case 'contractitem_01_exportexcel':
+		$modal = $m_location."/sub_modal/project/func08/contractitem_ms/contractitem_01_exportexcel.php";
 		$title = "匯出Excel";	
 		include $modal;
 		$smarty->assign('show_center',$show_center);
@@ -38,7 +38,7 @@ switch($ch) {
 	default:
 		if (empty($sid))
 		$sid = "mbpjitem";
-		$modal = $m_location."/sub_modal/project/func08/contractitem_ms/designreport.php";
+		$modal = $m_location."/sub_modal/project/func08/contractitem_ms/contractitem.php";
 		include $modal;
 		break;
 };
