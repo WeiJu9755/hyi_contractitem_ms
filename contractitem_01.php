@@ -46,109 +46,26 @@ $fm = $_GET['fm'];
 $mDB = "";
 $mDB = new MywebDB();
 
-// 載入狀態	1
-$selected_status1 = $_GET['status1'] ?? ''; 
+// 載入合約
+$selected_contract = $_GET['contract_id'] ?? '';
 
-$Qry = "SELECT caption FROM pjclass WHERE small_class = '0' ORDER BY orderby";
+$Qry = "SELECT contract_id, contract_caption FROM contract ORDER BY contract_caption";
 $mDB->query($Qry);
 
-$select_status1  = "<select class=\"inline form-select\" name=\"status1\" id=\"status1\" style=\"width:auto;\">";
-$select_status1 .= "<option value='' ".($selected_status1 == '' ? 'selected' : '')."></option>";
+$select_contract  = '<select class="inline form-select" name="contract_id" id="contract_id" style="width:auto;">';
+$select_contract .= '<option value=""' . ($selected_contract === '' ? ' selected' : '') . '></option>';
 
 if ($mDB->rowCount() > 0) {
 	while ($row = $mDB->fetchRow(2)) {
-		$caption = $row['caption'];
-		$selected = ($caption == $selected_status1) ? 'selected' : '';
-		$select_status1 .= "<option value='$caption' $selected>$caption</option>";
+		$contract_id       = $row['contract_id'];
+    	$contract_caption  = $row['contract_caption'];
+		$selected = ($contract_id === $selected_contract) ? ' selected' : '';
+		$select_contract .= "<option value='$contract_id' $selected>$contract_caption</option>";
 	}
 }
-$select_status1 .= "</select>";
-
-// 載入狀態 2
-$selected_status2 = $_GET['status2'] ?? ''; 
-
-$Qry = "SELECT caption FROM pjclass WHERE small_class != '0' ORDER BY orderby";
-$mDB->query($Qry);
-
-$select_status2  = "<select class=\"inline form-select\" name=\"status2\" id=\"status2\" style=\"width:auto;\">";
-$select_status2 .= "<option value='' ".($selected_status2 == '' ? 'selected' : '')."></option>";
-
-if ($mDB->rowCount() > 0) {
-	while ($row = $mDB->fetchRow(2)) {
-		$caption = $row['caption'];
-		$selected = ($caption == $selected_status2) ? 'selected' : '';
-		$select_status2 .= "<option value='$caption' $selected>$caption</option>";
-	}
-}
-$select_status2 .= "</select>";
-
-//區域
-$Qry = "SELECT caption FROM `items` WHERE pro_id = 'region'";
-$mDB->query($Qry);
-
-$get_region_dropdown = isset($_GET['region']) ? $_GET['region'] : '';
-
-$region_dropdown = "<select class=\"inline form-select\" name=\"region\" id=\"region\" style=\"width:auto;\">";
-$region_dropdown .= "<option></option>";
-
-if ($mDB->rowCount() > 0) {
-    while ($row = $mDB->fetchRow(2)) {
-        $select_region = $row['caption']; // ← 正確應該取 caption
-        $selected = ($get_region_dropdown == $select_region) ? "selected" : "";
-
-        $region_dropdown .= "<option value='$select_region' $selected>$select_region</option>";
-    }
-}
-
-$region_dropdown .= "</select>";
-
-//承攬模式
-$Qry = "SELECT caption AS ContractingModel FROM items 
-WHERE pro_id = 'ContractingModel'";
-
-$mDB->query($Qry);
+$select_contract .= '</select>';
 
 
-$get_ContractingModel_dropdown = isset($_GET['ContractingModel']) ? $_GET['ContractingModel'] : '';
-
-$ContractingModel_dropdown = "<select class=\"inline form-select\" name=\"ContractingModel\" id=\"ContractingModel\" style=\"width:auto;\">";
-$ContractingModel_dropdown .= "<option></option>";
-
-if ($mDB->rowCount() > 0) {
-    while ($row = $mDB->fetchRow(2)) {
-        $select_ContractingModel = $row['ContractingModel'];
-        $selected = ($get_ContractingModel_dropdown == $select_ContractingModel) ? "selected" : "";
-
-        $ContractingModel_dropdown .= "<option value='$select_ContractingModel' $selected>$select_ContractingModel</option>";
-    }
-}
-
-$ContractingModel_dropdown .= "</select>";
-
-//所屬公司
-$Qry = "SELECT company_id,company_name FROM company";
-
-$mDB->query($Qry);
-
-
-$get_company_id_dropdown = isset($_GET['company_id']) ? $_GET['company_id'] : '';
-
-$company_id_dropdown = "<select class=\"inline form-select\" name=\"company_id\" id=\"company_id\" style=\"width:auto;\">";
-$company_id_dropdown .= "<option></option>";
-
-if ($mDB->rowCount() > 0) {
-    while ($row = $mDB->fetchRow(2)) {
-		if ($row['company_id'] == '83186869'||$row['company_id'] == '93530861') {
-        $select_company_id = $row['company_id'];
-        $select_company_name = $row['company_name'];
-        $selected = ($get_company_id_dropdown == $select_company_id) ? "selected" : "";
-
-        $company_id_dropdown .= "<option value='$select_company_id' $selected>$select_company_name</option>";
-		}
-    }
-}
-
-$company_id_dropdown .= "</select>";
 
 
 
@@ -194,7 +111,7 @@ if ($manager_count > 0) {
 
 
 $m_location		= "/website/smarty/templates/".$site_db."/".$templates;
-include $m_location."/sub_modal/project/func02/designreport_ms/bulider_report.php";
+include $m_location."/sub_modal/project/func08/contractitem_ms/contractitem_report.php";
 
 
 $now = date('Y-m-d  H:i');
@@ -262,33 +179,13 @@ $style_css
 
 <hr class="style_a m-2 p-0">
 
-<!-- 查詢條件區塊（Bootstrap 樣式） -->
-<div class="container-fluid p-3 text-center">
 	<div class="row justify-content-center g-2">
 		<div class="col-auto">
-			<div class="form-label fw-bold">狀態(1):</div>
-			<div>$select_status1</div>
+			<div class="form-label fw-bold">合約:</div>
+			<div>$selected_contract</div>
 		</div>
 
-		<div class="col-auto">
-			<div class="form-label fw-bold">狀態(2):</div>
-			<div>$select_status2</div>
-		</div>
-
-		<div class="col-auto">
-			<div class="form-label fw-bold">區域:</div>
-			<div>$region_dropdown</div>
-		</div>
-
-		<div class="col-auto">
-			<div class="form-label fw-bold">承攬模式:</div>
-			<div>$ContractingModel_dropdown</div>
-		</div>
-
-		<div class="col-auto">
-			<div class="form-label fw-bold">所屬公司:</div>
-			<div>$company_id_dropdown</div>
-		</div>
+		
 
 		<div class="col-auto align-self-end">
 			<button type="button" class="btn btn-success" onclick="search();">
@@ -471,7 +368,7 @@ function excel_export() {
 		var fm = '$fm';
 		
 
-		window.location = '/index.php?ch=designreport_05_exportexcel&status1='+status1+'&status2='+status2+'&region='+region+'&ContractingModel='+ContractingModel+'&company_id='+company_id+'&fm=$fm';
+		window.location = '/index.php?ch=contractitem_report_01_exportexcel&status1='+status1+'&status2='+status2+'&region='+region+'&ContractingModel='+ContractingModel+'&company_id='+company_id+'&fm=$fm';
 		return false;
 
 	}	
