@@ -43,6 +43,7 @@ $list_view=<<<EOT
 				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:3%;">單價</th>
 				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:3%;">複價</th>
 				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:7%;">實際工作內容</th>
+				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:1%;">工作狀態</th>
 				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:3%;">施工人員</th>
 				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:1%;">施工人數</th>
 				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:1%;">施工時間</th>
@@ -126,7 +127,12 @@ $list_view
         ajax: {
             url: "/smarty/templates/$site_db/$templates/sub_modal/project/func08/contractitem_ms/ajax_report_01.php",
             type: "GET",
-           
+           data: function (d) {
+                d.contract_id   = $('#contract_id').val()   || '';
+				d.annual_month  = $('#annual_month').val()  || ''; 
+				console.log('sent params:', d); 
+				
+            }
         },
 			"rowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 
@@ -161,11 +167,10 @@ $list_view
 				$('td:eq(3)', nRow).html( contract_item );
 
 				//數量
-				var actual_qty = "";
-				if (aData[5] != null && aData[5] != "")
-					actual_qty = '<div class="text-center text-nowrap">'+aData[5]+'</div>';
+				var qty = (aData[5] != null && aData[5] !== "") ? Number(aData[5]) : 0;
+				var actual_qty = '<div class="text-center text-nowrap">' + qty.toLocaleString() + '</div>';
 
-				$('td:eq(4)', nRow).html( actual_qty );
+				$('td:eq(4)', nRow).html(actual_qty);
 
 				// 單位
 				var unit = "";
@@ -175,25 +180,19 @@ $list_view
 				$('td:eq(5)', nRow).html( unit );
 
 				// 單價
-				var unit_price = "";
-				if (aData[6] != null && parseFloat(aData[6]) !== 0)
-					var formatted = parseFloat(aData[12]).toLocaleString('zh-TW', {
-						minimumFractionDigits: 0
-					});
-					unit_price = '<div class="text-center text-nowrap">' + formatted + '</div>';
+				var price = (aData[6] != null && aData[6] !== "") ? Number(aData[6]) : 0;
+				var unit_price = '<div class="text-center text-nowrap">' + price.toLocaleString() + '</div>';
 
-				$('td:eq(6)', nRow).html( unit_price );
+				$('td:eq(6)', nRow).html(unit_price);
 
 				
 
 				//複價
 				var total_price = "";
 
-				if (aData[12] != null && parseFloat(aData[12]) !== 0)
-					var formatted = parseFloat(aData[12]).toLocaleString('zh-TW', {
-						minimumFractionDigits: 0
-					});
-					total_price = '<div class="text-center text-nowrap">' + formatted + '</div>';
+				var total = (aData[12] != null && aData[12] !== "") ? Number(aData[12]) : 0;
+				var total_price = '<div class="text-center text-nowrap">' + total.toLocaleString() + '</div>';
+
 				$('td:eq(7)', nRow).html( total_price );
 
 
@@ -204,12 +203,19 @@ $list_view
 
 				$('td:eq(8)', nRow).html( remark );
 
+				// 工作狀態
+				var remark = "";
+				if (aData[4] != null && aData[4] != "")
+					remark = '<div class="text-center text-nowrap">'+aData[4]+'</div>';
+
+				$('td:eq(9)', nRow).html( remark );
+
 				// 施工人員
 				var employees = "";
 				if (aData[9] != null && aData[9] != "")
 					employees = '<div class="text-center text-nowrap">'+aData[9]+'</div>';
 
-				$('td:eq(9)', nRow).html( employees );
+				$('td:eq(10)', nRow).html( employees );
 
 
 				// 施工人數
@@ -217,25 +223,22 @@ $list_view
 				if (aData[8] != null && aData[8] != "")
 					employee_count = '<div class="text-center text-nowrap">'+aData[8]+'</div>';
 
-				$('td:eq(10)', nRow).html( employee_count );
+				$('td:eq(11)', nRow).html( employee_count );
 
 				// 施工時間
 				var attendance_days = "";
 				if (aData[11] != null && aData[11] != "")
 					attendance_days = '<div class="text-center text-nowrap">'+aData[11]+'</div>';
 
-				$('td:eq(11)', nRow).html( attendance_days );
+				$('td:eq(12)', nRow).html( attendance_days );
 
 
 				// 出工小計
-				var sub_total = "";
-				if (aData[13] != null && parseFloat(aData[13]) !== 0)
-					var formatted = parseFloat(aData[13]).toLocaleString('zh-TW', {
-						minimumFractionDigits: 0
-					});
-					sub_total = '<div class="text-center text-nowrap">' + formatted + '</div>';
+				var val = (aData[13] != null && aData[13] !== "") ? parseFloat(aData[13]) : 0;
+				var formatted = val.toLocaleString('zh-TW', { minimumFractionDigits: 0 });
+				var sub_total = '<div class="text-center text-nowrap">' + formatted + '</div>';
 
-				$('td:eq(12)', nRow).html( sub_total );
+				$('td:eq(13)', nRow).html( sub_total );
 
 				
 

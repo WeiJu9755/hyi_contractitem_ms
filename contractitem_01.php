@@ -157,7 +157,7 @@ $style_css
 
 		<!-- 中央標題 -->
 		<div class="mycell weight pt-5 pb-4 text-center">
-			<h3>協力廠商作業進度表</h3>
+			<h3>合約工項月報表</h3>
 		</div>
 
 		<!-- 固定位置按鈕 -->
@@ -165,7 +165,7 @@ $style_css
 			
 			<div class="btn-group print" role="group" style="position:fixed; top:10px; right:10px; z-index:9999;">
 				
-				<button type="button" class="btn btn-success" onclick="excel_export();"><i class="bi bi-filetype-xls me-1"></i>匯出Excel</button>
+				<!-- <button type="button" class="btn btn-success" onclick="excel_export();"><i class="bi bi-filetype-xls me-1"></i>匯出Excel</button> -->
 				<button id="print" class="btn btn-info btn-lg" type="button" onclick="window.print();">
 					<i class="bi bi-printer"></i>&nbsp;列印
 				</button>
@@ -177,22 +177,57 @@ $style_css
 	</div>
 </div>
 
-<hr class="style_a m-2 p-0">
 
-	<div class="row justify-content-center g-2">
-		<div class="col-auto">
-			<div class="form-label fw-bold">合約:</div>
-			<div>$selected_contract</div>
-		</div>
 
-		
+<div class="d-flex justify-content-center align-items-end flex-wrap gap-3">
 
-		<div class="col-auto align-self-end">
-			<button type="button" class="btn btn-success" onclick="search();">
-				<i class="fas fa-check"></i>&nbsp;查詢
-			</button>
-		</div>
-	</div>
+    <!-- 月份 -->
+    <div class="d-inline-block text-center me-3">
+        <div class="size12 weight text-nowrap pt-2 vtop mb-2">月份: </div>
+        <div class="input-group" id="annualyear" style="max-width:180px; margin:0 auto;">
+            <input type="text" class="form-control" id="annual_month" 
+                   name="annual annual_month" placeholder="請輸入年份"
+                   aria-describedby="annual_month" value="$annual_month">
+            <button class="btn btn-outline-secondary input-group-append input-group-addon" 
+                    type="button" data-target="#annualyear" data-toggle="datetimepicker">
+                <i class="bi bi-calendar"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 合約 -->
+    <div class="d-inline-block text-center me-3">
+        <div class="form-label fw-bold">合約:</div>
+        <div>$select_contract</div>
+    </div>
+
+    <!-- 查詢按鈕 -->
+    <div class="d-inline-block">
+        <button type="button" class="btn btn-success" onclick="search();">
+            <i class="fas fa-check"></i>&nbsp;查詢
+        </button>
+    </div>
+</div>
+
+<!-- datetimepicker -->
+<script type="text/javascript">
+    $(function () {
+        $('#annualyear').datetimepicker({
+            locale: 'zh-tw',
+            format: "YYYY-MM",
+            allowInputToggle: true
+        });
+    });
+</script>
+<style>
+.bootstrap-datetimepicker-widget {
+    z-index: 1050 !important; /* 保證浮在其他元件上 */
+    position: absolute !important;
+}
+</style>
+
+	
+
 </div>
 <div style="margin-bottom: 150px;">
 	$show_bulider_report

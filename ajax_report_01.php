@@ -20,10 +20,24 @@ $mDB2 = "";
 $mDB2 = new MywebDB();
 
 
+$now = date("Y-m");
 
-$contractId = '320130016201';
-$startDate  = '2025-07-01';
-$endDate    = '2025-07-31';
+$select_contract_id = $_GET['contract_id'] ?? '';
+$annual_month = $_GET['annual_month'] ?? date("Y-m");
+
+// 建立起始日期（當月1號）
+$start_date = new DateTime($annual_month . '-01');
+
+// 複製一份用來算月底
+$end_date = clone $start_date;
+$end_date->modify('last day of this month');
+
+// 轉成字串格式 Y-m-d
+$start_date = $start_date->format('Y-m-d');
+$end_date   = $end_date->format('Y-m-d');
+
+// $start_date  = '2025-07-01';
+// $end_date    = '2025-07-31';
 
 // 一條 SQL 解決：以 dispatch 為日維度，左連到派工明細與出勤，再 group by
 $Qry = "SELECT
@@ -52,8 +66,8 @@ LEFT JOIN employee d
 LEFT JOIN contract_details f
        ON f.contract_id = b.contract_id AND f.seq = b.seq
 WHERE a.ConfirmSending = 'Y'
-  AND a.dispatch_date BETWEEN '2025-07-01' AND '2025-07-31'
-  AND a.contract_id = '320130016201'
+  AND a.dispatch_date BETWEEN '$start_date' AND '$end_date'
+  AND a.contract_id = '$select_contract_id'
 GROUP BY a.dispatch_date, a.contract_id, b.seq
 ORDER BY a.dispatch_date, b.seq;
 
@@ -86,7 +100,7 @@ while ($row = $mDB->fetchRow(2)) {
     $total_price = round($actual_qty * $unit_price, 2);
     $sub_total   = round($attendance_days * $DAY_RATE, 2);
 
-    $retval[] = [
+    $rowsByDate[$dispatch_date][] = [
         $dispatch_date,
         $contract_id,
         $seq,
@@ -98,10 +112,45 @@ while ($row = $mDB->fetchRow(2)) {
         $employee_count,
         $employees,
         $remark,
-        $attendance_days, // 換算天數
+        $attendance_days,
         $total_price,
         $sub_total
     ];
+}
+
+// 依日期範圍逐日輸出；有幾筆就列幾筆，沒資料就補一筆只有日期
+$retval = [];
+$cur    = new DateTime($start_date);
+$end    = new DateTime($end_date);
+
+while ($cur <= $end) {
+    $d = $cur->format('Y-m-d');
+
+    if (!empty($rowsByDate[$d])) {
+        foreach ($rowsByDate[$d] as $r) {
+            $retval[] = $r; // 同日多筆都列出
+        }
+    } else {
+        // 保持 14 欄：只有日期、其他空白
+        $retval[] = [
+            $d,  // dispatch_date
+            '',  // contract_id
+            '',  // seq
+            '',  // work_project
+            '',  // status
+            '',  // actual_qty
+            '',  // unit_price
+            '',  // unit
+            '',  // employee_count
+            '',  // employees
+            '',  // remark
+            '',  // attendance_days
+            '',  // total_price
+            ''   // sub_total
+        ];
+    }
+
+    $cur->modify('+1 day');
 }
 
 
