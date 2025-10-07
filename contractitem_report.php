@@ -32,31 +32,66 @@ $mDB2->remove();
 $list_view=<<<EOT
 <div class="w-100 px-3 py-2">
 	<table class="table dataTable table-bordered border-dark w-100" id="report_05_table" style="min-width:1720px;">
-		<thead class="table-light border-dark">
-			<tr style="border-bottom: 1px solid #000;">
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:3%;">日期</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:7%;">工作項目</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:2%;">項次</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:7%;">合約項目</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:3%;">數量</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:3%;">單位</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:3%;">單價</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:3%;">複價</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:7%;">實際工作內容</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:1%;">工作狀態</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:3%;">施工人員</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:1%;">施工人數</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:1%;">施工時間</th>
-				<th scope="col" class="text-center text-nowrap" style="background-color: #E2EFDA;width:3%;">出工小計<br>(出工+加班)</th>
-			</tr>
-		</thead>
-		<tbody class="table-group-divider">
-			<tr>
-				<td colspan="28" class="dataTables_empty">資料載入中...</td>
-			</tr>
-		</tbody>
-		
-	</table>
+    <colgroup>
+        <col style="width:3%">
+        <col style="width:7%">
+        <col style="width:2%">
+        <col style="width:7%">
+        <col style="width:3%">
+        <col style="width:3%">
+        <col style="width:3%">
+        <col style="width:3%">
+        <col style="width:7%">
+        <col style="width:1%">
+        <col style="width:3%">
+        <col style="width:1%">
+        <col style="width:1%">
+        <col style="width:3%">
+    </colgroup>
+    
+    <thead class="table-light border-dark">
+        <tr>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">日期</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">實際工作內容</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">項次</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">合約項目</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">數量</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">單位</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">單價</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">複價</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">工作狀態</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">施工人員</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">施工人數</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">施工時間</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">出工小計<br>(出工+加班)</th>
+        </tr>
+    </thead>
+
+    <tbody class="table-group-divider">
+        <tr>
+            <td colspan="14" class="dataTables_empty">資料載入中...</td>
+        </tr>
+    </tbody>
+
+    <tfoot class="table-light border-dark">
+        <tr>
+            <th class="text-center size14 weight" style="background-color:#FFEBAC;">總計 :</th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+            <th class="text-center" style="background-color:#FFEBAC;"></th>
+        </tr>
+    </tfoot>
+</table>
 </div>
 EOT;
 
@@ -196,26 +231,20 @@ $list_view
 				$('td:eq(7)', nRow).html( total_price );
 
 
-				// 實際工作內容
-				var remark = "";
-				if (aData[10] != null && aData[10] != "")
-					remark = '<div class="text-center text-nowrap">'+aData[10]+'</div>';
-
-				$('td:eq(8)', nRow).html( remark );
 
 				// 工作狀態
 				var remark = "";
 				if (aData[4] != null && aData[4] != "")
 					remark = '<div class="text-center text-nowrap">'+aData[4]+'</div>';
 
-				$('td:eq(9)', nRow).html( remark );
+				$('td:eq(8)', nRow).html( remark );
 
 				// 施工人員
 				var employees = "";
 				if (aData[9] != null && aData[9] != "")
 					employees = '<div class="text-center text-nowrap">'+aData[9]+'</div>';
 
-				$('td:eq(10)', nRow).html( employees );
+				$('td:eq(9)', nRow).html( employees );
 
 
 				// 施工人數
@@ -223,14 +252,14 @@ $list_view
 				if (aData[8] != null && aData[8] != "")
 					employee_count = '<div class="text-center text-nowrap">'+aData[8]+'</div>';
 
-				$('td:eq(11)', nRow).html( employee_count );
+				$('td:eq(10)', nRow).html( employee_count );
 
 				// 施工時間
 				var attendance_days = "";
 				if (aData[11] != null && aData[11] != "")
 					attendance_days = '<div class="text-center text-nowrap">'+aData[11]+'</div>';
 
-				$('td:eq(12)', nRow).html( attendance_days );
+				$('td:eq(11)', nRow).html( attendance_days );
 
 
 				// 出工小計
@@ -238,12 +267,53 @@ $list_view
 				var formatted = val.toLocaleString('zh-TW', { minimumFractionDigits: 0 });
 				var sub_total = '<div class="text-center text-nowrap">' + formatted + '</div>';
 
-				$('td:eq(13)', nRow).html( sub_total );
+				$('td:eq(12)', nRow).html( sub_total );
 
 				
 
 				return nRow;
 			},
+			"footerCallback": function( row, data, start, end, display ) {
+				var api = this.api();
+				
+				// 1. 定義合計函數，使用純數字避免 NaN
+				var sumColumn = function(i) {
+					var colData = api.column(i).data().toArray();
+					console.log("第 " + i + " 欄原始資料：", colData);
+					return colData.reduce(function (a, b) {
+						var x = parseFloat(String(a).replace(/<[^>]*>/g, '').replace(/,/g, '')) || 0;
+						var y = parseFloat(String(b).replace(/<[^>]*>/g, '').replace(/,/g, '')) || 0;
+						return x + y;
+					}, 0);
+				};
+
+		
+					
+				var SUM_price = number_format(sumColumn(6));
+				var SUM_total_price = number_format(sumColumn(12));	
+				var SUM_employee_count = number_format(sumColumn(8));
+				var SUM_attendance_days = number_format(sumColumn(11));
+				var SUM_sub_total = number_format(sumColumn(13));
+			
+				// 3. 將合計結果插入到 footer 中
+				
+				$(api.column(6).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_price + '</div>');
+				$(api.column(7).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_total_price + '</div>');
+				$(api.column(10).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_employee_count + '</div>');
+				$(api.column(11).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_attendance_days + '</div>');
+				$(api.column(12).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_sub_total + '</div>');
+				
+				
+
+
+				
+				
+				
+			}
+
+				
+
+
 		
 		});
 	
