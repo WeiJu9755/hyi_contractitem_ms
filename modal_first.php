@@ -35,6 +35,12 @@ switch($ch) {
 		include $modal;
 		$smarty->assign('show_center',$show_center);
 		break;
+	case 'contractitem_02':
+		$sid = "view01";
+		$modal = $m_location."/sub_modal/project/func08/contractitem_ms/contractitem_02.php";
+		include $modal;
+		$smarty->assign('show_center',$show_center);
+		break;
 	default:
 		if (empty($sid))
 		$sid = "mbpjitem";
