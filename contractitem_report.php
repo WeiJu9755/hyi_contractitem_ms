@@ -52,13 +52,14 @@ $list_view=<<<EOT
     <thead class="table-light border-dark">
         <tr>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">日期</th>
-            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">實際工作內容</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">工作項目</th>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">項次</th>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">合約項目</th>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">數量</th>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">單位</th>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">單價</th>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">複價</th>
+            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">實際工作內容</th>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">工作狀態</th>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">施工人員</th>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">施工人數</th>
@@ -231,20 +232,26 @@ $list_view
 				$('td:eq(7)', nRow).html( total_price );
 
 
+				// 實際工作內容
+				var remark = "";
+				if (aData[10] != null && aData[10] != "")
+					remark = '<div class="text-center text-nowrap">'+aData[10]+'</div>';
+
+				$('td:eq(8)', nRow).html( remark );
 
 				// 工作狀態
 				var remark = "";
 				if (aData[4] != null && aData[4] != "")
 					remark = '<div class="text-center text-nowrap">'+aData[4]+'</div>';
 
-				$('td:eq(8)', nRow).html( remark );
+				$('td:eq(9)', nRow).html( remark );
 
 				// 施工人員
 				var employees = "";
 				if (aData[9] != null && aData[9] != "")
 					employees = '<div class="text-center text-nowrap">'+aData[9]+'</div>';
 
-				$('td:eq(9)', nRow).html( employees );
+				$('td:eq(10)', nRow).html( employees );
 
 
 				// 施工人數
@@ -252,14 +259,14 @@ $list_view
 				if (aData[8] != null && aData[8] != "")
 					employee_count = '<div class="text-center text-nowrap">'+aData[8]+'</div>';
 
-				$('td:eq(10)', nRow).html( employee_count );
+				$('td:eq(11)', nRow).html( employee_count );
 
 				// 施工時間
 				var attendance_days = "";
 				if (aData[11] != null && aData[11] != "")
 					attendance_days = '<div class="text-center text-nowrap">'+aData[11]+'</div>';
 
-				$('td:eq(11)', nRow).html( attendance_days );
+				$('td:eq(12)', nRow).html( attendance_days );
 
 
 				// 出工小計
@@ -267,7 +274,7 @@ $list_view
 				var formatted = val.toLocaleString('zh-TW', { minimumFractionDigits: 0 });
 				var sub_total = '<div class="text-center text-nowrap">' + formatted + '</div>';
 
-				$('td:eq(12)', nRow).html( sub_total );
+				$('td:eq(13)', nRow).html( sub_total );
 
 				
 
@@ -299,9 +306,9 @@ $list_view
 				
 				$(api.column(6).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_price + '</div>');
 				$(api.column(7).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_total_price + '</div>');
-				$(api.column(10).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_employee_count + '</div>');
-				$(api.column(11).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_attendance_days + '</div>');
-				$(api.column(12).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_sub_total + '</div>');
+				$(api.column(11).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_employee_count + '</div>');
+				$(api.column(12).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_attendance_days + '</div>');
+				$(api.column(13).footer()).html('<div class="text-center size14 weight text-nowrap"> ' + SUM_sub_total + '</div>');
 				
 				
 
