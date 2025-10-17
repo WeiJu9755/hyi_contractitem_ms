@@ -186,7 +186,7 @@ $style_css
         <div class="size12 weight text-nowrap pt-2 vtop mb-2">月份: </div>
         <div class="input-group" id="annualyear" style="max-width:180px; margin:0 auto;">
             <input type="text" class="form-control" id="annual_month" 
-                   name="annual annual_month" placeholder="請輸入年份"
+                   name="annual annual_month" placeholder="請輸入月份"
                    aria-describedby="annual_month" value="$annual_month">
             <button class="btn btn-outline-secondary input-group-append input-group-addon" 
                     type="button" data-target="#annualyear" data-toggle="datetimepicker">
