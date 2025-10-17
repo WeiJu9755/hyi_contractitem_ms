@@ -51,7 +51,8 @@ $Qry = "SELECT
   f.unit_price,
   f.unit AS unit,
   COUNT(DISTINCT c.employee_id) AS employee_count,
-  SUM(c.attendance_hours) AS attendance_hours,
+  SUM( LEAST(COALESCE(c.attendance_hours, 0), 8) ) AS attendance_hours,
+  SUM( GREATEST(COALESCE(c.attendance_hours, 0) - 8, 0) ) AS attendance_overhours,
   GROUP_CONCAT(DISTINCT d.employee_name ORDER BY d.employee_name SEPARATOR '、') AS employees
 FROM dispatch a
 LEFT JOIN dispatch_contract_details b
@@ -75,46 +76,59 @@ ORDER BY a.dispatch_date, b.seq;
 
 $mDB->query($Qry);
 // 常數
-$HOURS_PER_DAY = 8;     // 每天 8 小時
-$DAY_RATE      = 3000;  // 你要的天數*單價
+$HOURS_PER_DAY = 8;
+$DAY_RATE      = 3500;
+$OVERTIME_RATE = round($DAY_RATE / 6, 2);
 
 $retval = [];
 while ($row = $mDB->fetchRow(2)) {
-    $dispatch_date    = $row['dispatch_date'];
-    $contract_id      = $row['contract_id'];
-    $seq              = $row['seq'];
-    $work_project     = $row['work_project'];
-    $status           = $row['status'];
-    $actual_qty       = is_numeric($row['actual_qty']) ? (float)$row['actual_qty'] : 0.0;
-    $unit_price       = is_numeric($row['unit_price']) ? (float)$row['unit_price'] : 0.0;
-    $unit             = $row['unit'];
-    $employee_count   = (int)$row['employee_count'];
-    $employees        = $row['employees'];
-    $remark           = $row['remark'];
-    $attendance_hours = is_numeric($row['attendance_hours']) ? (float)$row['attendance_hours'] : 0.0;
+        $dispatch_date        = $row['dispatch_date'];
+        $contract_id          = $row['contract_id'];
+        $seq                  = $row['seq'];
+        $work_project         = $row['work_project'];
+        $status               = $row['status'] ?? '施工中';
+        $actual_qty           = is_numeric($row['actual_qty']) ? (float)$row['actual_qty'] : "";
+        $unit_price           = is_numeric($row['unit_price']) ? (float)$row['unit_price'] : "";
+        $unit                 = $row['unit'];
+        $employee_count       = (int)$row['employee_count'];
+        $employees            = $row['employees'];
+        $remark               = $row['remark'];
+        $attendance_hours     = is_numeric($row['attendance_hours']) ? (float)$row['attendance_hours'] : "";
+        $attendance_overhours = is_numeric($row['attendance_overhours']) ? (float)$row['attendance_overhours'] : "";
 
-    // 小時 -> 天數（四捨五入到小數 2 位）
-    $attendance_days = round($attendance_hours / $HOURS_PER_DAY, 2);
+        // 小時 → 天數（四捨五入到小數 2 位）
+        $attendance_days = round($attendance_hours / $HOURS_PER_DAY, 2);
 
-    // 金額
-    $total_price = round($actual_qty * $unit_price, 2);
-    $sub_total   = round($attendance_days * $DAY_RATE, 2);
+        // 正常薪資（日薪）
+        $regular_pay = round($attendance_days * $DAY_RATE, 2);
+
+        // 加班費
+        $overtime_pay = round($attendance_overhours * $OVERTIME_RATE, 2);
+
+        // 出工小記（含加班費）
+        $work_summary_pay = round($regular_pay + $overtime_pay, 2);
+
+        // 複價
+        $total_price = round($actual_qty * $unit_price, 2);
 
     $rowsByDate[$dispatch_date][] = [
         $dispatch_date,
-        $contract_id,
+        $remark,
         $seq,
         $work_project,
-        $status,
         $actual_qty,
-        $unit_price,
         $unit,
-        $employee_count,
-        $employees,
-        $remark,
-        $attendance_days,
+        $unit_price,
         $total_price,
-        $sub_total
+        $status,
+        $employees,
+        $employee_count,
+        $attendance_days,
+        $regular_pay,
+        $attendance_overhours,
+        $overtime_pay,
+        $work_summary_pay,
+
     ];
 }
 
@@ -133,20 +147,23 @@ while ($cur <= $end) {
     } else {
         // 保持 14 欄：只有日期、其他空白
         $retval[] = [
-            $d,  // dispatch_date
-            '',  // contract_id
-            '',  // seq
-            '',  // work_project
-            '',  // status
-            '',  // actual_qty
-            '',  // unit_price
-            '',  // unit
-            '',  // employee_count
-            '',  // employees
-            '',  // remark
-            '',  // attendance_days
-            '',  // total_price
-            ''   // sub_total
+            $d,  // dispatch_date,
+            '',  // remark,
+            '',  // seq,
+            '',  // work_project,
+            '',  // actual_qty,
+            '',  // unit,
+            '',  // unit_price,
+            '',  // total_price,
+            '',  // status,
+            '',  // employees,
+            '',  // employee_count,
+            '',  // attendance_days,
+            '',  // sub_total
+            '',  // sub_total
+            '',  // sub_total
+            '',  // sub_total
+            
         ];
     }
 
