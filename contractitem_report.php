@@ -44,7 +44,7 @@ $list_view=<<<EOT
         <col style="width:1%">
         <col style="width:3%">
         <col style="width:1%">
-        <col style="width:1%">
+
 		<col style="width:1%">
 		<col style="width:1%">
 		<col style="width:1%">
@@ -64,7 +64,7 @@ $list_view=<<<EOT
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">工作狀態</th>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">施工人員</th>
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">施工人數</th>
-            <th class="text-center text-nowrap" style="background-color:#E2EFDA;">施工天數/day</th>
+           
             <th class="text-center text-nowrap" style="background-color:#E2EFDA;">出工日薪</th>
 			<th class="text-center text-nowrap" style="background-color:#E2EFDA;">加班時數/hr</th>
 			<th class="text-center text-nowrap" style="background-color:#E2EFDA;">加班費</th>
@@ -94,7 +94,7 @@ $list_view=<<<EOT
             <th class="text-center" style="background-color:#FFEBAC;"></th>
             <th class="text-center" style="background-color:#FFEBAC;"></th>
             <th class="text-center" style="background-color:#FFEBAC;"></th>
-            <th class="text-center" style="background-color:#FFEBAC;"></th>
+
             <th class="text-center" style="background-color:#FFEBAC;"></th>
 			<th class="text-center" style="background-color:#FFEBAC;"></th>
 			<th class="text-center" style="background-color:#FFEBAC;"></th>
@@ -265,12 +265,7 @@ $list_view
 
 				$('td:eq(10)', nRow).html( employee_count );
 
-				// 施工時間
-				var attendance_days = "";
-				if (aData[11] != null && aData[11] != "")
-					attendance_days = '<div class="text-center text-nowrap">'+aData[11]+'</div>';
 
-				$('td:eq(11)', nRow).html( attendance_days );
 
 
 				// 日薪
@@ -278,28 +273,28 @@ $list_view
 				var formatted = val.toLocaleString('zh-TW', { minimumFractionDigits: 0 });
 				var regular_pay = '<div class="text-center text-nowrap">' + formatted + '</div>';
 
-				$('td:eq(12)', nRow).html( regular_pay );
+				$('td:eq(11)', nRow).html( regular_pay );
 
 				// 加班時數
 				var val = (aData[13] != null && aData[13] !== "") ? parseFloat(aData[13]) : 0;
 				var formatted = val.toLocaleString('zh-TW', { minimumFractionDigits: 0 });
 				var attendance_overhours = '<div class="text-center text-nowrap">' + formatted + '</div>';
 
-				$('td:eq(13)', nRow).html( attendance_overhours );
+				$('td:eq(12)', nRow).html( attendance_overhours );
 
 				// 加班費
 				var val = (aData[14] != null && aData[14] !== "") ? parseFloat(aData[14]) : 0;
 				var formatted = val.toLocaleString('zh-TW', { minimumFractionDigits: 0 });
 				var overtime_pay = '<div class="text-center text-nowrap">' + formatted + '</div>';
 
-				$('td:eq(14)', nRow).html( overtime_pay );
+				$('td:eq(13)', nRow).html( overtime_pay );
 
-				// 加班費
+				// 出工小計
 				var val = (aData[15] != null && aData[15] !== "") ? parseFloat(aData[15]) : 0;
 				var formatted = val.toLocaleString('zh-TW', { minimumFractionDigits: 0 });
 				var work_summary_pay = '<div class="text-center text-nowrap">' + formatted + '</div>';
 
-				$('td:eq(15)', nRow).html( work_summary_pay );
+				$('td:eq(14)', nRow).html( work_summary_pay );
 
 				
 
@@ -317,32 +312,39 @@ $list_view
 
 				// 累加指定欄位
 				var sumColumn = function(i) {
-					var colData = api.column(i).data().toArray();
-					return colData.reduce(function (a, b) {
-						var x = parseFloat(String(a).replace(/<[^>]*>/g, '').replace(/,/g, '')) || 0;
-						var y = parseFloat(String(b).replace(/<[^>]*>/g, '').replace(/,/g, '')) || 0;
-						return x + y;
-					}, 0);
-					};
+					var total = 0;
+
+					api.column(i, { page: 'current' }).nodes().each(function(cell) {
+
+						var text = $(cell).text()
+							.replace(/,/g, '')
+							.trim();
+
+						var val = parseFloat(text) || 0;
+
+						total += val;
+					});
+
+					return total;
+				};
 
 
 
 				var SUM_total_price = number_format(sumColumn(7));
 				var SUM_employee_count = number_format(sumColumn(10));
-				var SUM_attendance_days = number_format(sumColumn(11));
-				var SUM_regular_pay = number_format(sumColumn(12));
-				var SUM_attendance_overhours = number_format(sumColumn(13));
-				var SUM_overtime_pay = number_format(sumColumn(14));
-				var SUM_work_summary_pay = number_format(sumColumn(15));
+				var SUM_regular_pay = number_format(sumColumn(11));
+				var SUM_attendance_overhours = number_format(sumColumn(12));
+				var SUM_overtime_pay = number_format(sumColumn(13));
+				var SUM_work_summary_pay = number_format(sumColumn(14));
 
 				
 				$(api.column(7).footer()).html('<div class="text-center size14 weight text-nowrap">' + SUM_total_price + '</div>');
 				$(api.column(10).footer()).html('<div class="text-center size14 weight text-nowrap">' + SUM_employee_count + '</div>');
-				$(api.column(11).footer()).html('<div class="text-center size14 weight text-nowrap">' + SUM_attendance_days + '</div>');
-				$(api.column(12).footer()).html('<div class="text-center size14 weight text-nowrap">' + SUM_regular_pay + '</div>');
-				$(api.column(13).footer()).html('<div class="text-center size14 weight text-nowrap">' + SUM_attendance_overhours + '</div>');
-				$(api.column(14).footer()).html('<div class="text-center size14 weight text-nowrap">' + SUM_overtime_pay + '</div>');
-				$(api.column(15).footer()).html('<div class="text-center size14 weight text-nowrap">' + SUM_work_summary_pay + '</div>');
+				
+				$(api.column(11).footer()).html('<div class="text-center size14 weight text-nowrap">' + SUM_regular_pay + '</div>');
+				$(api.column(12).footer()).html('<div class="text-center size14 weight text-nowrap">' + SUM_attendance_overhours + '</div>');
+				$(api.column(13).footer()).html('<div class="text-center size14 weight text-nowrap">' + SUM_overtime_pay + '</div>');
+				$(api.column(14).footer()).html('<div class="text-center size14 weight text-nowrap">' + SUM_work_summary_pay + '</div>');
 				}
 
 				

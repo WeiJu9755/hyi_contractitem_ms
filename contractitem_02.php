@@ -49,7 +49,7 @@ $mDB3 = "";
 $mDB3 = new MywebDB();
 
 
-$Qry = "SELECT contract_id,contract_caption FROM contract";
+$Qry = "SELECT contract_id,contract_caption FROM contract WHERE closed = 'N'";
 
 $mDB->query($Qry);
 $casereport_list = "";
@@ -90,8 +90,8 @@ if ($total > 0) {
 						<th class="text-center text-nowrap vmiddle" style="width:5%;padding: 10px;background-color: #CBF3FC;">施工時間/hr</th>
             <th class="text-center text-nowrap vmiddle" style="width:5%;padding: 10px;background-color: #CBF3FC;">出工日薪</th>
             <th class="text-center text-nowrap vmiddle" style="width:5%;padding: 10px;background-color: #CBF3FC;">加班費</th>
-            <th class="text-center text-nowrap vmiddle" style="width:5%;padding: 10px;background-color: #CBF3FC;">勞、健、團保費</th>
-            <th class="text-center text-nowrap vmiddle" style="width:5%;padding: 10px;background-color: #CBF3FC;">便當費</th>
+            <th class="text-center text-nowrap vmiddle" style="width:5%;padding: 10px;background-color: #CBF3FC;">勞、健保</th>
+            <!--<th class="text-center text-nowrap vmiddle" style="width:5%;padding: 10px;background-color: #CBF3FC;">便當費</th>-->
             <th class="text-center text-nowrap vmiddle" style="width:5%;padding: 10px;background-color: #CBF3FC;">總計</th>
 					</tr>
 				</thead>
@@ -143,10 +143,14 @@ $SUM_total_pay = 0.0;
 // 工時
 $HOURS_PER_DAY = 8;
 // 日薪
-$DAY_RATE      = 3500;
+$DAY_RATE      = 0;
 
 // 勞健團保費
-$total_insurance_fee = 333;
+$LI_ER_Pay = 0;
+$NH_Pay = 0;
+
+
+// 便當費
 $LUNCH_ALLOWANCE = 65; 
 
 // 
@@ -167,7 +171,7 @@ if ($total2 > 0) {
         $remark                = $row2['remark'];
 
         // 取得合約項目員工（使用 $mDB3 並用不同變數 $row3）
-        $Qry3 = "SELECT a.dispatch_id, b.employee_name, a.attendance_hours, a.is_overtime
+        $Qry3 = "SELECT a.dispatch_id, b.employee_name, a.attendance_hours, a.is_overtime,b.SalaryType,b.salary,b.LIS_Bracket,b.NHIS_Bracket
                  FROM dispatch_attendance_sub a
                  LEFT JOIN employee b ON b.employee_id = a.employee_id
                  WHERE a.dispatch_id = '$dispatch_id'
@@ -183,13 +187,25 @@ if ($total2 > 0) {
             $employee_name = $row3['employee_name'];
             $attendance_hours = is_numeric($row3['attendance_hours']) ? (float)$row3['attendance_hours'] : 0.0;
             $overtime = ($attendance_hours > $HOURS_PER_DAY) ? $attendance_hours - $HOURS_PER_DAY : 0;
+            $DAY_RATE = $row3['salary'];
+            $LIS_Bracket = $row3['LIS_Bracket'];
+            $NHIS_Bracket = $row3['NHIS_Bracket'];
             $regular_hours = min($attendance_hours, $HOURS_PER_DAY);
             // 每小時工資
             $hourly_rate = $DAY_RATE / $HOURS_PER_DAY;
             // 計算薪資
             $regular_pay  = $regular_hours * $hourly_rate;
             $overtime_pay = $overtime * $OVERTIME_RATE;
+            $total_insurance_fee = 0;
 
+            // 計算勞健保
+            // 勞保 (含就保 13%)
+            $LI_ER_Pay = round($LIS_Bracket * 0.13 * 0.7 / 30, 2);
+
+            // 健保
+            $NH_Pay = round($NHIS_Bracket * 0.0517 * 0.6 / 30, 2);
+
+            $total_insurance_fee = $LI_ER_Pay + $NH_Pay;
 
             $total_pay = $regular_pay + $overtime_pay + $total_insurance_fee + $LUNCH_ALLOWANCE;
             $row_count++;
@@ -211,7 +227,7 @@ if ($total2 > 0) {
             <td class="text-center text-nowrap vmiddle" style="padding: 10px;">$regular_pay</td>
             <td class="text-center text-nowrap vmiddle" style="padding: 10px;">$overtime_pay</td>
             <td class="text-center text-nowrap vmiddle" style="padding: 10px;">$total_insurance_fee</td>
-            <td class="text-center text-nowrap vmiddle" style="padding: 10px;">$LUNCH_ALLOWANCE</td>
+            <!--<td class="text-center text-nowrap vmiddle" style="padding: 10px;">$LUNCH_ALLOWANCE</td> -->
             <td class="text-center text-nowrap vmiddle" style="padding: 10px;">$total_pay</td>
 
 
@@ -278,7 +294,7 @@ EOT;
               <td class="text-center text-nowrap vmiddle" style="padding: 10px;background-color: #FFE699;font-weight:bold;font-size:16px;font-style:italic;">$SUM_regular_pay</td>
               <td class="text-center text-nowrap vmiddle" style="padding: 10px;background-color: #FFE699;font-weight:bold;font-size:16px;font-style:italic;">$SUM_overtime_pay</td>
               <td class="text-center text-nowrap vmiddle" style="padding: 10px;background-color: #FFE699;font-weight:bold;font-size:16px;font-style:italic;">$SUM_total_insurance_fee</td>
-              <td class="text-center text-nowrap vmiddle" style="padding: 10px;background-color: #FFE699;font-weight:bold;font-size:16px;font-style:italic;">$SUM_LUNCH_ALLOWANCE</td>
+              <!--<td class="text-center text-nowrap vmiddle" style="padding: 10px;background-color: #FFE699;font-weight:bold;font-size:16px;font-style:italic;">$SUM_LUNCH_ALLOWANCE</td>-->
               <td class="text-center text-nowrap vmiddle" style="padding: 10px;background-color: #FFE699;font-weight:bold;font-size:16px;font-style:italic;">$SUM_total_pay</td>
           </tr>
         </tfoot>
