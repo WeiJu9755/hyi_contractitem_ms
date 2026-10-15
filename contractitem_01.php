@@ -48,6 +48,8 @@ $mDB = new MywebDB();
 
 // 載入合約
 $selected_contract = $_GET['contract_id'] ?? '';
+require_once __DIR__ . '/contractitem_report_data.php';
+$annual_month = contractitem_report_month($_GET['annual_month'] ?? '');
 
 $Qry = "SELECT contract_id, contract_caption FROM contract ORDER BY contract_caption";
 $mDB->query($Qry);
@@ -165,7 +167,7 @@ $style_css
 			
 			<div class="btn-group print" role="group" style="position:fixed; top:10px; right:10px; z-index:9999;">
 				
-				<!-- <button type="button" class="btn btn-success" onclick="excel_export();"><i class="bi bi-filetype-xls me-1"></i>匯出Excel</button> -->
+				<button type="button" class="btn btn-success btn-lg" onclick="excel_export();"><i class="bi bi-filetype-xls me-1"></i>匯出Excel</button>
 				<button id="print" class="btn btn-info btn-lg" type="button" onclick="window.print();">
 					<i class="bi bi-printer"></i>&nbsp;列印
 				</button>
@@ -186,7 +188,7 @@ $style_css
         <div class="size12 weight text-nowrap pt-2 vtop mb-2">月份: </div>
         <div class="input-group" id="annualyear" style="max-width:180px; margin:0 auto;">
             <input type="text" class="form-control" id="annual_month" 
-                   name="annual annual_month" placeholder="請輸入月份"
+                   name="annual_month" placeholder="請輸入月份"
                    aria-describedby="annual_month" value="$annual_month">
             <button class="btn btn-outline-secondary input-group-append input-group-addon" 
                     type="button" data-target="#annualyear" data-toggle="datetimepicker">
@@ -395,15 +397,13 @@ var verify_all = function(salary_sheet_id,check) {
 
 
 function excel_export() {
-		var status1 = $('#status1').val();
-		var status2 = $('#status2').val();
-		var region = $('#region').val();
-		var ContractingModel = $('#ContractingModel').val();
-		var company_id = $('#company_id').val();
-		var fm = '$fm';
-		
-
-		window.location = '/index.php?ch=contractitem_report_01_exportexcel&status1='+status1+'&status2='+status2+'&region='+region+'&ContractingModel='+ContractingModel+'&company_id='+company_id+'&fm=$fm';
+		var params = $.param({
+			ch: 'contractitem_01_exportexcel',
+			contract_id: $('#contract_id').val() || '',
+			annual_month: $('#annual_month').val() || '',
+			fm: '$fm'
+		});
+		window.location = '/index.php?' + params;
 		return false;
 
 	}	
